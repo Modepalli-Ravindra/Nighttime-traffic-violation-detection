@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Night Vision Traffic Guard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="overlay"></div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="logo">
+            <i class="fas fa-shield-alt"></i> Traffic<span>Guard</span>
+        </div>
+        <ul class="nav-links">
+            <li class="active" id="nav-dashboard"><a href="#"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li id="nav-analytics"><a href="#"><i class="fas fa-chart-line"></i> Analytics</a></li>
+            <li id="nav-live"><a href="#"><i class="fas fa-video"></i> Live Feeds</a></li>
+            <li id="nav-settings"><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header>
+            <h1><i class="fas fa-moon"></i> Night Time Violation Detection System</h1>
+            <div class="status-badge pulse">System Active</div>
+        </header>
+
+        <!-- DASHBOARD SECTION -->
+        <div id="section-dashboard" class="content-section">
+            <!-- Stats Row -->
+            <div class="stats-container">
+                <div class="card stat-card">
+                    <div class="icon-box red"><i class="fas fa-traffic-light"></i></div>
+                    <div class="stat-info">
+                        <h3>Signal Jumps</h3>
+                        <p id="signal-count">0</p>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="icon-box orange"><i class="fas fa-hard-hat"></i></div>
+                    <div class="stat-info">
+                        <h3>No Helmet</h3>
+                        <p id="helmet-count">0</p>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="icon-box blue"><i class="fas fa-users"></i></div>
+                    <div class="stat-info">
+                        <h3>Triple Riding</h3>
+                        <p id="triple-count">0</p>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="icon-box purple"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div class="stat-info">
+                        <h3>Traffic and No Helmet</h3>
+                        <p id="traffic-helmet-count">0</p>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="icon-box green"><i class="fas fa-car-crash"></i></div>
+                    <div class="stat-info">
+                        <h3>Multiple Violations</h3>
+                        <p id="multiple-count">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Upload & Video Area -->
+                <div class="card video-section">
+                    <div class="card-header">
+                        <h2>Live Analysis Feed</h2>
+                    </div>
+
+                    <div class="upload-area" id="drop-zone">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Drag & Drop Night Vision Footage</p>
+                        <button class="btn-glow" onclick="document.getElementById('fileInput').click()">Select
+                            File</button>
+                        <input type="file" id="fileInput" hidden accept="video/*">
+                    </div>
+
+                    <div class="video-container hidden" id="video-container">
+                        <button id="back-btn" class="btn-glow"
+                            style="position: absolute; top: 20px; right: 20px; z-index: 100; padding: 8px 15px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2);">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </button>
+                        <img id="processed-feed" src="" alt="Processing...">
+                        <div class="loader" id="video-loader"></div>
+                    </div>
+                </div>
+
+                <!-- Live Logs -->
+                <div class="card log-section">
+                    <div class="card-header">
+                        <h2>Violation Logs</h2>
+                    </div>
+                    <div class="log-list" id="log-list">
+                        <!-- Logs will appear here -->
+                        <div class="log-item info">
+                            <span class="time">System</span>
+                            <span class="msg">Waiting for input...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ANALYTICS SECTION -->
+        <div id="section-analytics" class="content-section hidden" style="display: none;">
+            <div class="stats-container">
+                <div class="card stat-card">
+                    <div class="icon-box blue"><i class="fas fa-chart-area"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Reports</h3>
+                        <p>1,245</p>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="icon-box orange"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="stat-info">
+                        <h3>Active Zones</h3>
+                        <p>8</p>
+                    </div>
+                </div>
+                <div class="card stat-card">
+                    <div class="icon-box red"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <div class="stat-info">
+                        <h3>Fines Issued</h3>
+                        <p>$12.5k</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Weekly Trends</h2>
+                </div>
+                <div style="height: 300px; padding: 10px;">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Violation Distribution</h2>
+                    </div>
+                    <div style="height: 250px; padding: 10px; display: flex; justify-content: center;">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Peak Violation Hours</h2>
+                    </div>
+                    <div style="height: 250px; padding: 10px;">
+                        <canvas id="peakHoursChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LIVE FEEDS SECTION -->
+        <div id="section-live" class="content-section hidden" style="display: none;">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                <div class="card" style="position: relative;">
+                    <div class="card-header">
+                        <h2>Main Junction Cam 01</h2>
+                    </div>
+                    <div
+                        style="height: 250px; background: #000; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                        <img src="https://traffic-violation-placeholder.s3.amazonaws.com/placeholder-cam1.jpg"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block'"
+                            style="width:100%; height:100%; object-fit: cover;">
+                        <i class="fas fa-video-slash" style="font-size: 40px; color: #333; display: none;"></i>
+                    </div>
+                    <div class="status-badge"
+                        style="position: absolute; top: 20px; right: 20px; background: rgba(16, 185, 129, 0.2); color: #10b981; border-color: rgba(16, 185, 129, 0.3);">
+                        Live</div>
+                </div>
+                <div class="card" style="position: relative;">
+                    <div class="card-header">
+                        <h2>Highway Entry Cam 02</h2>
+                    </div>
+                    <div
+                        style="height: 250px; background: #000; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                        <i class="fas fa-video-slash" style="font-size: 40px; color: #333;"></i>
+                    </div>
+                    <div class="status-badge"
+                        style="position: absolute; top: 20px; right: 20px; background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">
+                        Offline</div>
+                </div>
+                <div class="card" style="position: relative;">
+                    <div class="card-header">
+                        <h2>Market Road Cam 03</h2>
+                    </div>
+                    <div
+                        style="height: 250px; background: #000; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                        <i class="fas fa-video-slash" style="font-size: 40px; color: #333;"></i>
+                    </div>
+                    <div class="status-badge"
+                        style="position: absolute; top: 20px; right: 20px; background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">
+                        Offline</div>
+                </div>
+                <div class="card" style="position: relative;">
+                    <div class="card-header">
+                        <h2>Exit Toll Cam 04</h2>
+                    </div>
+                    <div
+                        style="height: 250px; background: #000; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                        <i class="fas fa-video-slash" style="font-size: 40px; color: #333;"></i>
+                    </div>
+                    <div class="status-badge"
+                        style="position: absolute; top: 20px; right: 20px; background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: rgba(239, 68, 68, 0.3);">
+                        Offline</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SETTINGS SECTION -->
+        <div id="section-settings" class="content-section hidden" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h2>System Preferences</h2>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 15px; padding-top: 20px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <span style="display: flex; align-items: center;"><i class="fas fa-bell"
+                                style="margin-right: 15px; color: var(--primary);"></i> Real-time Alerts</span>
+                        <div
+                            style="cursor: pointer; width: 40px; height: 20px; background: var(--primary); border-radius: 10px; position: relative;">
+                            <div
+                                style="width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; right: 2px; top: 2px;">
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <span style="display: flex; align-items: center;"><i class="fas fa-adjust"
+                                style="margin-right: 15px; color: var(--accent);"></i> High Contrast Mode</span>
+                        <div
+                            style="cursor: pointer; width: 40px; height: 20px; background: rgba(255,255,255,0.1); border-radius: 10px; position: relative;">
+                            <div
+                                style="width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; left: 2px; top: 2px;">
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <span style="display: flex; align-items: center;"><i class="fas fa-server"
+                                style="margin-right: 15px; color: var(--success);"></i> Auto-Archive Logs</span>
+                        <div
+                            style="cursor: pointer; width: 40px; height: 20px; background: var(--success); border-radius: 10px; position: relative;">
+                            <div
+                                style="width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; right: 2px; top: 2px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 20px;">
+                <div class="card-header">
+                    <h2>Detection Sensitivity</h2>
+                </div>
+                <div style="padding: 20px 0;">
+                    <label style="display: block; margin-bottom: 15px; color: #94a3b8;">Confidence Threshold (Currently:
+                        0.6)</label>
+                    <input type="range" class="slider"
+                        style="width: 100%; accent-color: var(--primary); height: 5px; background: rgba(255,255,255,0.1); border-radius: 5px; outline: none;">
+                    <div
+                        style="display: flex; justify-content: space-between; margin-top: 10px; color: #64748b; font-size: 12px;">
+                        <span>0.1</span>
+                        <span>0.5</span>
+                        <span>0.9</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 20px;">
+                <div class="card-header">
+                    <h2>Admin Control</h2>
+                </div>
+                <div style="padding: 20px 0; display: flex; gap: 20px;">
+                    <button class="btn-glow" style="background: var(--warning);">Reset Statistics</button>
+                    <button class="btn-glow" style="background: var(--danger);">Reboot System</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>
